@@ -1,149 +1,83 @@
 ---
-name: '@0x33a/anti-zh_llm'
-description: Eliminate AI-generated UI/UX anti-patterns (AI slop / AI泔水味) and robotic product copywriting (zh_llm flavor) when building, refactoring, or reviewing web and desktop applications. Use whenever the user asks to create, polish, audit, or de-AI-ify frontend interfaces, UI components, layouts, interaction flows, or UI copywriting.
+name: anti-zh-llm
+description: Eliminate AI-generated UI/UX anti-patterns (AI slop) and robotic product copywriting (zh_llm flavor) when building, refactoring, or reviewing web and desktop applications. Use whenever the user asks to create, polish, audit, or de-AI-ify frontend interfaces, UI components, layouts, interaction flows, or UI copywriting.
+metadata:
+  package: '@0x33a/anti-zh_llm'
+  author: '0x33a'
 ---
 
-# Anti AI Slop UI (去 AI 泔水味前端与交互规范)
+# Anti AI Slop UI (去 AI 味前端界面与产品文案规范)
 
-Eliminate common AI-generated frontend anti-patterns, fragmented layouts, broken CSS box-models, nonsensical state flows, and robotic UI copywriting (`zh_llm` flavor) to produce cohesive, human-grade interfaces.
+消除前端开发、桌面端应用与组件重构中常见的 AI 生成反模式（碎片化布局、盒模型与圆角破损、状态流转失真）以及机械冗余的产品文案（`zh_llm` 腔调），产出高一致性、符合直觉的人类级交互界面。
 
 ## When to Use (适用场景)
 
-* Building or styling web applications, desktop apps (Electron / Tauri / Qt), dashboards, or component libraries
-
-* Auditing, critiquing, or refactoring existing UI/UX to remove "AI slop" or "AI flavor" (去 AI 味 / 去 AI 泔水)
-
-* Rewriting robotic, verbose, or defensive UI copywriting, tooltips, and error messages (`zh_llm` 翻译腔与机器味文案)
-
-* Fixing layout inconsistency, low screen utilization, or broken hover/border-radius states
-
-## Core Rules & Workflow (核心审查与开发规范)
-
-### 1. Purge Robotic Copywriting (剔除 `zh_llm` 机器味与挽尊文案)
-
-Write concise, task-oriented UI text that speaks the user's language rather than exposing internal prompt constraints or system mechanics.
-
-* **Strip defensive or self-justifying explanations (严禁挽尊式/防御性内部解释)**:
-
-  * Never display internal architectural disclaimers in user-facing modals (e.g., explaining why an OAuth client ID was chosen, or promising "will not switch to another client's identity / 不会切换到其他启动器身份").
-
-  * State only what happened and what the user needs to do next.
-
-* **Delete filler slogans and redundant subheaders (删除车轱辘话副标题与空洞口号)**:
-
-  * Remove generic AI-generated taglines under page titles (e.g., "Your workspace, independently managed / 你的游戏，独立管理" or "Changes take effect immediately based on actual return values / 参数修改即时下发，以实际返回结果为准").
-
-  * If a section header is already clear (e.g., "Account Settings"), do not add a subtitle repeating "Manage and configure your accounts here".
-
-* **Make action labels explicit (杜绝无宾语的裸动词按钮)**:
-
-  * Never use bare, ambiguous verbs like `Import (导入)`, `Select (选择)`, or `Manage (管理)` on global toolbars when multiple entity types exist.
-
-  * Specify the target object explicitly (e.g., `Import Modpack / 导入整合包`, `Import Profile / 导入配置`).
-
-* **Use clear subject-verb state labels (杜绝主谓不明的状态缩略词)**:
-
-  * Replace vague passive labels like `Waiting for selection (等待选择)` with explicit status text such as `No instance selected (未选择实例)`.
-
-* **Remove debug and demo artifacts (严禁在正式界面暴露调试/Demo 残留)**:
-
-  * Strip all test toggles, heartbeat log demos (`demo-heartbeat / 演示心跳日志`), and mock items before shipping production views.
-
-### 2. Unify Layout Shells and Information Density (强制布局复用与空间利用率)
-
-Prevent the visual fragmentation that occurs when an LLM generates each page or modal in isolation.
-
-* **Share a single page-header and toolbar component (同级页面强制复用顶栏与布局骨架)**:
-
-  * Peer views (such as different resource tabs, asset managers, or list pages) must reuse the exact same header and filter-bar component.
-
-  * Keep shared actions like `Refresh (刷新列表)`, `Search (搜索)`, and filter controls in identical coordinates across all tabs so buttons never jump around when switching views.
-
-* **Maximize horizontal utilization (提高横向空间利用率，拒绝无脑纵向堆叠)**:
-
-  * Group related search inputs, category pills, sort dropdowns, and refresh buttons onto a single compact toolbar row rather than stacking them vertically across multiple sparse rows.
-
-* **Standardize control heights and spacing (统一同行控件高度与上下间距)**:
-
-  * Enforce a strict height token (e.g., `32px` or `36px`) across all buttons, text inputs, and select dropdowns sitting on the same row.
-
-  * Always apply explicit `gap` tokens (e.g., `gap: 8px` or `12px`) between stacked form controls so adjacent inputs or dropdowns never touch at zero distance ("负距离接触").
-
-* **Demote low-frequency configuration (低频设置收进二级页面，禁止主界面重复入口)**:
-
-  * Move one-time or low-frequency settings (like default download/storage paths) into a dedicated Settings view.
-
-  * Never place multiple redundant entry points (e.g., a path dropdown + a folder manager button + a path settings button) for the same configuration on the primary workspace view.
-
-### 3. Enforce CSS Box-Model, Border-Radius, and Hitbox Integrity (严守盒模型、圆角裁切与热区边界)
-
-Validate every interactive container so child states never break parent geometry.
-
-* **Clip child backgrounds and active indicator bars (防止子元素或左边框把圆角捅成直角)**:
-
-  * When adding a left accent bar, badge, or `:hover` background inside a rounded card or pill, apply `overflow: hidden` on the parent container or match the child's `border-top-left-radius` and `border-bottom-left-radius` so rounded corners never turn into sharp right angles on hover.
-
-* **Prevent card border clipping (防止外层容器裁切卡片圆角与边框)**:
-
-  * Ensure scrollable list containers have sufficient padding (`padding: 2px` or `4px`) or proper box-sizing so child card borders and rounded corners are not sliced off at the edges.
-
-* **Keep child controls inside row hover bounds (行内按钮严禁溢出 Hover 热区)**:
-
-  * Ensure action buttons (`...`), pills, and switches inside table rows or list cards have heights and margins that fit strictly inside the parent row's `:hover` highlight box without overflowing top, bottom, or side borders.
-
-* **Never mix native OS controls with custom themed UI (严禁混用未修饰的系统原生下拉框)**:
-
-  * Do not leave unstyled native `<select>` elements inside a custom-styled dark or glassmorphism interface. Use a unified custom select component across all views.
-
-* **Avoid cliché AI status pills (拒绝无实质意义的发光状态胶囊)**:
-
-  * Do not clutter sidebars or bottom bars with glowing dot "All systems operational / 全部系统运行正常" status widgets unless the app genuinely monitors live background services and provides an anchored diagnostic breakdown on click.
-
-### 4. Rationalize Interaction Flows, State Transitions, and Error Handling (理顺交互流转、缓存过渡与异常处理)
-
-Design state transitions around user intent rather than lazy state bindings.
-
-* **Gate unavailable actions contextually (缺失前置条件时做引导或隐藏，而非摆设无用按钮)**:
-
-  * When a prerequisite is missing (e.g., no user account exists), show a single primary CTA to resolve it (`Add Account / 添加账号`) instead of rendering secondary action buttons that cannot function.
-
-  * When an instance or item type does not support extensions (e.g., a pure Vanilla instance without a mod/shader loader), hide or disable the extension management cards or guide the user to install a loader first, rather than showing active management cards as if extensions are already supported.
-
-* **Separate user validation from system crashes (严禁把普通前端校验包装成系统崩溃)**:
-
-  * Missing user input (such as clicking "Start" before selecting an account) is a normal validation state, not a runtime exception. Guide the user inline or open the account selector directly.
-
-  * Never pop up a failure dialog offering to `Export Error Log (导出错误日志)` for a simple missing selection.
-
-* **Avoid redundant dual-control logic (杜绝“复选框 + 反向默认值下拉框”的左右脑互搏)**:
-
-  * Never pair a boolean checkbox (`[x] Also install optional component / 同时安装某模组`) with an immediately adjacent dropdown whose default option is `Do not install component (不安装该模组)`.
-
-  * Use a single control (either a single dropdown with `None` + options, or a checkbox that conditionally renders the version/mode selector only when checked).
-
-* **Anchor popovers to their trigger and sync error logs (浮层就近锚定，异常必须与通知队列同步)**:
-
-  * Clicking a status indicator in the bottom-left corner must not open an unanchored notification drawer in the top-right corner.
-
-  * Never position two different floating panels (such as `Notifications / 通知` and `Update History / 更新历史`) at the exact same screen coordinates where they overlap.
-
-  * If an indicator claims `Recent error occurred (最近出现异常)` and opens a notification drawer on click, ensure the error handler actually pushes the error record into that notification list.
-
-* **Use clean loading transitions (切页与筛选过渡严禁残留不可点的旧列表)**:
-
-  * When switching tabs or updating filter criteria, either swap immediately once ready or display a clean skeleton/spinner over the container.
-
-  * Never leave the previous tab's stale DOM items visible and unclickable (`pointer-events: none`) underneath a text banner saying `Updating conditions, temporarily showing previous results... (正在更新条件，暂时显示上次结果...)`.
-
-
-## Quick Audit Checklist (快速自检清单)
-
-* \[ \] **Copywriting**: Are there any defensive explanations, redundant subtitles, bare "Import/Select" buttons, or leaked debug items?
-
-* \[ \] **Layout Reuse**: Do all peer list/resource pages share one header component with the "Refresh" button in the exact same spot?
-
-* \[ \] **Spacing & Alignment**: Do all controls on the same row have the exact same pixel height, and do all stacked controls have a non-zero `gap`?
-
-* \[ \] **Border-Radius & Hitboxes**: Does hovering any item keep its rounded corners intact (`overflow: hidden`) and keep child buttons inside the hover highlight box?
-
-* \[ \] **State & Errors**: Are missing prerequisites handled via inline guidance rather than crash logs, and do tab switches clear stale unclickable content cleanly?
+- 开发或重构 Web 应用、桌面应用（Electron / Tauri / Qt）、管理后台或组件库
+- 审查现有前端界面与交互流程，去除界面中的“AI 味”或“AI 泔水感”
+- 改写机械、冗长、自证清白式或主谓不明的界面文案、提示词与报错信息
+- 修复同级页面布局割裂、空间利用率低下、圆角裁切异常或悬停热区溢出问题
+
+## Steps (核心开发与审查规范)
+
+### 1. 保持产品文案简洁、准确、面向用户任务
+
+界面文本应使用用户熟悉的业务语言，直接传达当前状态与可执行操作，不暴露内部实现机制或提示词痕迹。
+
+- **移除内部机制说明与防御性声明**：用户界面和弹窗中只说明当前结果与下一步操作，不向用户解释内部技术实现、鉴权策略选择或底层降级规则（例如：不写“当前采用自有应用授权，不会切换到其他客户端身份”，直接写“授权配置未生效，请联系管理员”）。
+- **删除空洞口号与复读式副标题**：页面或模块标题已经表达清楚含义时，不在标题下方堆砌无信息量的宣传语或同义复述（例如：标题为“账号设置”时，不加“管理与配置您的账号信息”；删除“你的工作区，独立管理”、“参数修改即时下发，以实际返回结果为准”等填充句）。
+- **操作按钮使用明确的“动词 + 宾语”**：当全局工具栏或页面存在多种资源类型时，不使用孤立的裸动词（如单独写`导入`、`选择`、`管理`），明确标注操作对象（如`导入配置`、`导入归档`、`添加数据源`）。
+- **状态标签采用完整清晰的表述**：不使用主谓不明的被动缩略词（如将未选中目标的状态写为`等待选择`），改用明确的当前状态描述（如`未选择实例`或`尚未选择运行目标`）。
+- **清理调试与演示残留**：发布或交付前，移除所有仅用于开发验证的测试开关、心跳日志演示项（如`演示模式`、`测试心跳日志`）和占位假数据。
+
+### 2. 统一页面布局骨架与空间利用率
+
+避免逐页独立生成代码导致的布局碎片化，按操作频率与任务重要性组织界面层级。
+
+- **同级视图复用统一的顶栏与工具栏组件**：结构相似的平级页面（如不同类别的资源列表、数据标签页）必须复用同一套页头与筛选栏骨架，保持`搜索`、`筛选`、`刷新列表`及主操作按钮在完全一致的视觉位置，切换标签页时控件位置不发生跳动。
+- **紧凑排列筛选栏并保障窄屏可达性**：将关联的搜索框、分类标签、排序下拉框和刷新按钮优先整合在同一水平工具栏内，避免每个控件独占一行造成纵向空间浪费；窄屏下允许合理换行，长弹窗采用内部内容区滚动，确保底部的`确认`与`取消`按钮始终停留在视口内可达。
+- **统一同行控件尺寸与堆叠间距**：同一水平行内的按钮、输入框和下拉选择框必须使用统一的高度变量（如统一为 `32px` 或 `36px`）并保持基线对齐；上下堆叠的表单控件或卡片之间必须设置明确的间距变量（如 `gap: 8px` 或 `12px`），严禁相邻下拉框或输入框零间距紧贴。
+- **主工作区聚焦高频任务，低频配置与高危操作分层收起**：
+  - 主区域优先铺满高频使用的列表、图表或工作台，避免将低频规则设置与高频主列表左右对半平铺。
+  - 将默认路径、缓存目录、提醒规则等低频配置收入二级设置页或顶栏弹窗，不在主界面重复放置多个指向同一配置的入口（如同时在主界面平铺路径下拉框、目录管理按钮和路径设置按钮）。
+  - 将`删除`、`重置`等高风险低频操作放入`更多`菜单底部并与常规操作分隔，明确提示操作后果。
+
+### 3. 严守盒模型、圆角裁切与交互热区边界
+
+逐一检查容器在默认、悬停（`:hover`）、聚焦（`:focus`）和选中（`:active`）状态下的几何边界。
+
+- **保持圆角容器与子元素视觉边界一致**：在带圆角的卡片、列表项或胶囊标签内部添加左侧高亮指示条、背景色块或悬停态时，必须在父容器设置 `overflow: hidden`（在不裁切必要浮层的前提下）或同步设置子元素对应侧的圆角半径，防止子元素直角背景溢出并将父容器圆角顶成直角。
+- **预留滚动容器内边距防止边框被裁切**：可滚动列表容器与外层视口之间预留足够的内边距（如 `padding: 2px` 或 `4px`）与 `box-sizing: border-box`，防止卡片四周的边框、圆角或聚焦环在容器边缘被硬性截断。
+- **行内控件严格收敛在父级悬停热区内**：表格行或列表卡片内部的操作按钮（如`...`菜单按钮）、状态胶囊和开关组件，其高度与外边距必须严格收容在父行 `:hover` 高亮背景框内部，不得超出父容器的上下或左右边界。
+- **统一自定义主题下的表单控件视觉风格**：在自定义深色、毛玻璃或品牌主题界面中，所有下拉选择框、复选框和滚动条必须使用与设计系统一致的组件样式，严禁混入未修饰的操作系统原生 `<select>` 下拉框。
+- **移除无实质诊断功能的装饰性状态指示器**：不在侧边栏或底栏放置仅供装饰的发光圆点与“全部系统运行正常”状态胶囊，除非应用确实监控后台服务且点击后可在触发源附近展开真实的诊断明细。
+
+### 4. 理顺状态流转、数据真实性与异常处理
+
+围绕用户的真实任务流设计状态切换与错误处理，确保界面反馈诚实、连贯。
+
+- **缺失前置条件时直接引导，禁用或隐藏无关操作**：
+  - 当缺少必要前置条件（如尚未添加任何账号或数据源）时，主界面直接展示单一明确的引导入口（如`添加账号`），不渲染当前无法执行的次要操作按钮。
+  - 当目标对象的类型不支持扩展功能（如基础标准实例不支持插件或扩展包）时，隐藏或禁用扩展管理入口并说明原因，不展示看似可用但实际无效的管理卡片。
+- **区分前端输入校验与系统运行异常**：用户未选择必填项（如未选择执行账号就点击启动）属于常规前置校验，应通过行内提示或直接拉起选择面板解决；严禁将其包装为系统崩溃弹窗，更不得在此类校验提示中提供毫无意义的`导出错误日志`按钮。
+- **消除功能重叠或语义冲突的双重控件**：不将表达同一决策的布尔复选框与下拉框重复堆叠（例如：上方放置`[x] 同时安装可选组件`复选框，下方紧跟默认值为`不安装该组件`的下拉框）。应合并为单一控件（使用包含“不安装”选项的单一路径下拉框，或仅在勾选复选框后才展开版本选择框）。
+- **如实展示数据状态与具体错误原因**：
+  - 严格区分`加载中`、`成功但为空（0 条）`、`读取失败`与`数据已过期`四种状态。请求失败或数据未取得时，严禁静默回退显示为 `0` 或`正常 / 健康`。
+  - 错误提示应说明已确认的具体原因（如指出具体冲突的任务类型），不将网络超时笼统猜测为“权限不足”或含糊表述为“状态变化或已有任务”。
+- **浮层就近锚定并同步异常记录**：
+  - 局部状态指示器触发的详情浮层应锚定在触发元素附近，避免点击左下角状态栏却在右上角弹出抽屉；不同浮层（如`通知列表`与`更新记录`）必须使用独立且不冲突的定位关系，避免同坐标重叠。
+  - 若状态栏提示“最近出现异常”并在点击后打开通知面板，异常处理逻辑必须同步将该条错误详情写入通知列表，避免用户打开面板后看到“暂无通知”。
+- **保持列表筛选、后台刷新与批量操作的上下文连续性**：
+  - **切页与筛选过渡**：切换标签页或筛选条件时，使用骨架屏、加载指示器或就绪后直接切换；严禁保留上一视图的旧列表内容并将其置灰禁点（`pointer-events: none`），同时在顶部挂一行“正在更新条件，暂时显示上次结果...”。
+  - **后台刷新不打断当前操作**：定时轮询或后台数据刷新时，保留用户当前选中的记录、正在编辑的表单草稿及未完成的提交流程；排序、筛选或翻页后，行操作必须绑定记录唯一 ID 而非显示下标。
+  - **所见即所得的搜索与批量操作**：界面展示的中文状态标签（如`运行中`）应可直接用于搜索过滤，不要求用户输入内部英文枚举值；批量操作需明确区分`选择当前页`与`选择全部匹配结果`，部分失败时逐项反馈并支持仅重试失败项。
+- **复用已有输入并按风险区分只读与编辑态**：
+  - 当用户的操作上下文已提供完整有效参数时直接执行，不再弹窗要求重复输入同一信息。
+  - 对包含敏感凭证或易误改参数的详情页，默认采用只读展示并在字段旁提供独立的`复制`按钮（点击复制不触发编辑态），用户点击`编辑`按钮后再切换为带`保存 / 取消`的输入表单。
+  - 反馈提示的持续时间应与后果匹配：轻量成功提示（如`已保存`）短暂显示后自动消失，不长期占据主内容区；失败提示则保留原因说明与重试入口。
+- **使用标准渲染管线处理过渡动画**：启动画面或视图切换动画应基于主窗口标准 CSS / Canvas 动画与系统帧调度接口实现，严禁为绕过隐藏窗口合成器帧率限制而编写后台循环截图（discarded capture）或硬编码毫秒级定时器（`setTimeout`）强行销毁窗口的脆弱黑魔法。
+
+## Gotchas (常见陷阱与快速自检)
+
+- **单页面孤立生成导致布局漂移**：分多次对话逐个生成页面时，最容易出现“五个页面五种顶栏、刷新按钮到处乱跑、边距圆角不一致”。修改或新增页面前，必须先读取并复用现有的布局外壳组件。
+- **用界面文案掩盖逻辑缺陷**：遇到鉴权失败、状态不同步或交互不合理时，应直接修复底层状态机与判断逻辑，严禁通过在界面上增加一段解释性文字来替缺陷辩解。
+- **忽略伪类状态下的圆角裁切**：圆角变直角、按钮超出悬停框等问题往往只在 `:hover`、`:focus` 或 `:active` 时显现，审查样式时必须逐一验证首尾子元素在交互态下的边界表现。
