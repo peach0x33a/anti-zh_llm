@@ -1,4 +1,4 @@
-# @0x33a/anti-zh_llm (`anti-zh-llm`)
+# anti-zh_llm (`anti-zh-llm`)
 
 去除前端 UI/UX 与中文产品文案中的 AI 味（`zh_llm` 腔调与 AI Slop 反模式）。适用于开发、重构和审查网页应用、桌面端应用（Electron / Tauri / Qt）、管理后台及交互文案。
 
@@ -14,11 +14,11 @@
 ### 1. 支持 `~/.agents/skills` 的工具
 
 ```bash
-git clone https://github.com/peach0x33a/anti-zh_llm.git ~/.agents/skills/@0x33a/anti-zh_llm
+git clone https://github.com/peach0x33a/anti-zh_llm.git ~/.agents/skills/anti-zh_llm
 ```
 
 ### 2. Codex 全局 Skills 目录
 
 ```bash
-git clone https://github.com/peach0x33a/anti-zh_llm.git ~/.codex/skills/@0x33a/anti-zh_llm
+git clone https://github.com/peach0x33a/anti-zh_llm.git ~/.codex/skills/anti-zh_llm
 ```
